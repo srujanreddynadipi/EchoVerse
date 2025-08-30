@@ -1,0 +1,5 @@
+This is a sample text file for testing the EchoVerse file upload functionality. 
+
+It contains multiple paragraphs to demonstrate how text files are processed and converted to audio.
+
+The app should be able to read this content and use it for text-to-speech conversion with the selected tone and voice settings.

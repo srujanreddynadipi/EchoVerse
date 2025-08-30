@@ -1,0 +1,1 @@
+Welcome to EchoVerse! This is a test message to demonstrate the different tones available in our text-to-speech system. You should notice differences in speech rate, volume, and delivery style based on the selected tone.

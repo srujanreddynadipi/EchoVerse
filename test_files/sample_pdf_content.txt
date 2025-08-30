@@ -1,0 +1,36 @@
+Sample PDF Content for Testing
+
+This is a test document to demonstrate the PDF text extraction functionality in EchoVerse.
+
+Introduction
+============
+
+EchoVerse is an AI-powered audiobook application that can convert various file formats to speech. This document serves as a test case for PDF text extraction.
+
+Features
+========
+
+1. Text-to-Speech Conversion
+2. Multiple Voice Options
+3. Tone Selection
+4. File Format Support:
+   - TXT files
+   - PDF files
+   - Word documents (DOC/DOCX)
+   - CSV files
+
+Usage
+=====
+
+To use EchoVerse:
+1. Upload a file or paste text
+2. Select your preferred tone
+3. Choose a voice
+4. Click "Process Text" to generate audio
+
+This PDF demonstrates that the application can successfully extract text from PDF documents and convert them to audio format.
+
+Conclusion
+==========
+
+The PDF text extraction feature enhances the versatility of EchoVerse, allowing users to convert PDF documents into audiobooks easily.
