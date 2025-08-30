@@ -882,7 +882,12 @@ function Sidebar() {
   const location = useLocation();
 
   const isActive = (path) => {
-    const currentPath = location.pathname.replace('/dashboard', '');
+    // Remove the /admin prefix and any trailing slashes
+    const currentPath = location.pathname.replace(/^\/admin\/?/, '');
+    // Handle the dashboard case where path might be empty or 'dashboard'
+    if (path === 'dashboard') {
+      return currentPath === '' || currentPath === 'dashboard';
+    }
     return currentPath === path;
   };
 
@@ -892,11 +897,11 @@ function Sidebar() {
   }
 
   const navItems = [
-    { path: "", label: "Dashboard", icon: BarChart3, gradient: "from-blue-500 to-purple-600" },
-    { path: "/users", label: "Users", icon: Users, gradient: "from-indigo-500 to-purple-600" },
-    { path: "/content", label: "Content", icon: Shield, gradient: "from-orange-500 to-red-600" },
-    { path: "/reports", label: "Reports", icon: TrendingUp, gradient: "from-emerald-500 to-teal-600" },
-    { path: "/settings", label: "Settings", icon: Settings, gradient: "from-gray-500 to-slate-600" }
+    { path: "dashboard", label: "Dashboard", icon: BarChart3, gradient: "from-blue-500 to-purple-600" },
+    { path: "users", label: "Users", icon: Users, gradient: "from-indigo-500 to-purple-600" },
+    { path: "content", label: "Content", icon: Shield, gradient: "from-orange-500 to-red-600" },
+    { path: "reports", label: "Reports", icon: TrendingUp, gradient: "from-emerald-500 to-teal-600" },
+    { path: "settings", label: "Settings", icon: Settings, gradient: "from-gray-500 to-slate-600" },
   ];
 
   return (
@@ -1243,15 +1248,14 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<AdminApp />}>
-        <Route index element={<DashboardHome />} />
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<DashboardHome />} />
         <Route path="users" element={<UserStats />} />
         <Route path="content" element={<ContentStats />} />
         <Route path="reports" element={<EngagementStats />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>
-      <Route path="/" element={<Navigate to="/" replace />} />
-      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
