@@ -21,8 +21,18 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-# Enable CORS for React frontend - temporarily allow all origins for testing
-CORS(app)
+
+# Configure CORS
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "http://localhost:3000",  # For local development
+            "https://echo-verse-two.vercel.app"  # Vercel domain
+        ],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # Configure Flask settings for file uploads
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max file size
@@ -87,14 +97,6 @@ def get_tone_prompts():
 
 TONE_PROMPTS = get_tone_prompts()
 
-def clean_tone_prefix(text, tone):
-    """Remove any tone prefix from the text"""
-    if not text:
-        return text
-    # Remove any [TONE] prefix (case insensitive)
-    pattern = re.compile(r'^\s*\[?\s*' + re.escape(tone.upper()) + r'\s*TONE\s*\]?\s*', re.IGNORECASE)
-    return pattern.sub('', text).strip()
-
 def call_ai_llm(text, tone):
     """Call AI LLM for tone-adaptive text rewriting (Hugging Face first, then Watson fallback)"""
     try:
@@ -102,11 +104,10 @@ def call_ai_llm(text, tone):
         logger.info(f"Attempting text rewriting with Hugging Face (tone: {tone})")
         result = hf_service.rewrite_text(text, tone)
         
-        # Clean any tone prefix from the result
-        if result:
-            cleaned_result = clean_tone_prefix(result, tone)
+        # Check if we got a real result (not just a mock response)
+        if result and not result.startswith(f"[{tone.upper()} TONE]"):
             logger.info("Text rewriting successful with Hugging Face")
-            return cleaned_result
+            return result
         
         logger.info("Hugging Face not available, trying Watson fallback")
         # Fallback to Watson if Hugging Face fails
@@ -114,8 +115,8 @@ def call_ai_llm(text, tone):
         
     except Exception as e:
         logger.error(f"Error in AI text rewriting: {e}")
-        # Return original text without tone prefix in case of error
-        return text
+        # Final fallback
+        return f"[{tone.upper()} TONE] {text}"
 
 def call_watsonx_llm(text, tone):
     """Call IBM Watsonx LLM for tone-adaptive text rewriting (fallback)"""
@@ -123,7 +124,7 @@ def call_watsonx_llm(text, tone):
         # Check if we have valid credentials
         if WATSONX_API_KEY == 'YOUR_WATSONX_API_KEY' or not WATSONX_API_KEY:
             logger.info("Using mock rewriting (no valid Watson credentials)")
-            return text  # Return text without tone prefix
+            return f"[{tone.upper()} TONE] {text}"
         
         # Get access token
         access_token = get_access_token()
@@ -166,11 +167,11 @@ def call_watsonx_llm(text, tone):
             return generated_text
         else:
             logger.error(f"Watsonx API error: {response.status_code} - {response.text}")
-            return text  # Return original text without tone prefix
+            return f"[{tone.upper()} TONE] {text}"  # Fallback
             
     except Exception as e:
         logger.error(f"Error calling Watsonx LLM: {e}")
-        return text  # Return original text without tone prefix
+        return f"[{tone.upper()} TONE] {text}"  # Fallback
 
 def get_access_token():
     """Get IBM Cloud access token"""

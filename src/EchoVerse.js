@@ -336,17 +336,16 @@ const EchoVerse = ({ user, onLogout }) => {
 
         if (response.ok) {
           const data = await response.json();
-          // Remove any tone prefixes from the response
-          const cleanText = data.rewritten_text.replace(/^\s*\[?\s*[A-Z]+\s*TONE\s*\]?\s*/i, '');
-          setRewrittenText(cleanText);
+          setRewrittenText(data.rewritten_text);
           
-          // Save to history with cleaned text
-          saveToHistory(inputText, cleanText, selectedTone, selectedVoice, false);
+          // Save to history
+          saveToHistory(inputText, data.rewritten_text, selectedTone, selectedVoice, false);
         } else {
           console.error('Failed to rewrite text');
-          // Fallback to mock implementation without tone prefix
-          setRewrittenText(inputText);
-          saveToHistory(inputText, inputText, selectedTone, selectedVoice, false);
+          // Fallback to mock implementation
+          const mockRewritten = `[${selectedTone.toUpperCase()} TONE] ${inputText}`;
+          setRewrittenText(mockRewritten);
+          saveToHistory(inputText, mockRewritten, selectedTone, selectedVoice, false);
         }
       } catch (error) {
         console.error('Error calling rewrite API:', error);
