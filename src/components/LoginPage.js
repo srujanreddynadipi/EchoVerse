@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_ENDPOINTS } from '../utils/api';
 import { Mail, Lock, Eye, EyeOff, User, ArrowRight, UserPlus } from 'lucide-react';
 
 const LoginPage = ({ onLogin, onSwitchToRegister }) => {
@@ -24,7 +25,7 @@ const LoginPage = ({ onLogin, onSwitchToRegister }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/auth/login', {
+      const response = await fetch(API_ENDPOINTS.LOGIN, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

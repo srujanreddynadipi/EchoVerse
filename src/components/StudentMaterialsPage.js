@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { API_ENDPOINTS, getAudioUrl } from '../utils/api';
 import {
   Upload,
   FileText,
@@ -55,7 +56,7 @@ const StudentMaterialsPage = ({ user }) => {
       formData.append('file', file);
       formData.append('user_id', user.id);
 
-      const response = await fetch('http://localhost:5000/process-study-material', {
+      const response = await fetch(API_ENDPOINTS.PROCESS_STUDY_MATERIAL, {
         method: 'POST',
         body: formData
       });
@@ -102,7 +103,7 @@ const StudentMaterialsPage = ({ user }) => {
     setIsGeneratingAudio(prev => ({ ...prev, [key]: true }));
 
     try {
-      const response = await fetch('http://localhost:5000/generate-topic-audio', {
+      const response = await fetch(API_ENDPOINTS.GENERATE_TOPIC_AUDIO, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,7 +125,7 @@ const StudentMaterialsPage = ({ user }) => {
             ...prev,
             [key]: {
               status: 'completed',
-              audioUrl: `http://localhost:5000${data.audio_url}`,
+              audioUrl: getAudioUrl(data.audio_url),
               filename: data.filename,
               fileSize: data.file_size
             }

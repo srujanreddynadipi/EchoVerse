@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { API_ENDPOINTS } from '../utils/api';
 import {
   Upload,
   FileText,
@@ -115,14 +116,13 @@ Perfect for: A cozy movie night with family`
     setAudioUrl(null);
 
     try {
-      const response = await fetch('http://localhost:5001/generate-audiobook', {
+      const response = await fetch(API_ENDPOINTS.SYNTHESIZE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          original_text: inputText,
-          rewritten_text: inputText, // Using same text for elders
+          text: inputText,
           voice: selectedVoice,
           tone: selectedTone,
           user_id: user?.id || 'elder_user'

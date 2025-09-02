@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import mammoth from 'mammoth';
 import Papa from 'papaparse';
 import * as pdfjsLib from 'pdfjs-dist';
+import { API_ENDPOINTS, getAudioUrl } from './utils/api';
 import { 
   Upload, 
   FileText, 
@@ -67,7 +68,7 @@ const EchoVerse = ({ user, onLogout }) => {
     const loadTonesAndVoices = async () => {
       try {
         // Fetch tones
-        const tonesResponse = await fetch('http://localhost:5000/tones');
+        const tonesResponse = await fetch(API_ENDPOINTS.TONES);
         if (tonesResponse.ok) {
           const tonesData = await tonesResponse.json();
           const mappedTones = tonesData.tones?.map(tone => mapToneFromBackend(tone)) || [];
@@ -77,7 +78,7 @@ const EchoVerse = ({ user, onLogout }) => {
         }
 
         // Fetch voices
-        const voicesResponse = await fetch('http://localhost:5000/voices');
+        const voicesResponse = await fetch(API_ENDPOINTS.VOICES);
         if (voicesResponse.ok) {
           const voicesData = await voicesResponse.json();
           const mappedVoices = voicesData.voices?.map(voice => mapVoiceFromBackend(voice)) || [];
@@ -323,7 +324,7 @@ const EchoVerse = ({ user, onLogout }) => {
       
       try {
         // Call backend API to rewrite text
-        const response = await fetch('http://localhost:5000/rewrite', {
+        const response = await fetch(API_ENDPOINTS.REWRITE, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -368,7 +369,7 @@ const EchoVerse = ({ user, onLogout }) => {
     
     try {
       // Call backend API to analyze story and create segments
-      const response = await fetch('http://localhost:5000/story-narration', {
+      const response = await fetch(API_ENDPOINTS.STORY_NARRATION, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -512,7 +513,7 @@ const EchoVerse = ({ user, onLogout }) => {
       for (let i = 0; i < storySegments.length; i++) {
         const segment = storySegments[i];
         
-        const response = await fetch('http://localhost:5000/story-narration-audio', {
+        const response = await fetch(API_ENDPOINTS.STORY_NARRATION_AUDIO, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -531,7 +532,7 @@ const EchoVerse = ({ user, onLogout }) => {
           if (data.success) {
             audioUrls.push({
               ...segment,
-              audioUrl: `http://localhost:5000${data.audio_url}`,
+              audioUrl: getAudioUrl(data.audio_url),
               filename: data.filename,
               fileSize: data.file_size
             });
@@ -563,7 +564,7 @@ const EchoVerse = ({ user, onLogout }) => {
     setIsProcessing(true);
     
     try {
-      const response = await fetch('http://localhost:5000/story-narration-merged', {
+      const response = await fetch(API_ENDPOINTS.STORY_NARRATION_MERGED, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -578,7 +579,7 @@ const EchoVerse = ({ user, onLogout }) => {
         const data = await response.json();
         if (data.success) {
           // Set the merged audio URL for playback
-          setAudioUrl(`http://localhost:5000${data.audio_url}`);
+          setAudioUrl(getAudioUrl(data.audio_url));
           
           // Save to history as merged story narration
           saveToHistory(inputText, `Story Narration (Merged - ${data.segments_count} segments)`, 'multiple', 'multiple', true);
@@ -606,7 +607,7 @@ const EchoVerse = ({ user, onLogout }) => {
         const historyId = await saveToHistory(originalText, rewrittenText, selectedTone, selectedVoice, false);
         
         // Call backend API to generate audio
-        const response = await fetch('http://localhost:5000/synthesize', {
+        const response = await fetch(API_ENDPOINTS.SYNTHESIZE, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -641,7 +642,7 @@ const EchoVerse = ({ user, onLogout }) => {
   const saveToHistory = async (original, rewritten, tone, voice, audioGenerated = false) => {
     try {
       // Save to database
-      const response = await fetch('http://localhost:5000/history', {
+      const response = await fetch(API_ENDPOINTS.HISTORY, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -706,7 +707,7 @@ const EchoVerse = ({ user, onLogout }) => {
   const recordDownload = async ({ original, rewritten, tone, voice, blob }) => {
     try {
       const size = blob ? blob.size : null;
-      const response = await fetch('http://localhost:5000/downloads', {
+      const response = await fetch(API_ENDPOINTS.DOWNLOADS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

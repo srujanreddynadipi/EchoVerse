@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_ENDPOINTS } from '../utils/api';
 import { Download, ArrowLeft } from 'lucide-react';
 
 const DownloadsPage = ({ onNavigate, user }) => {
@@ -13,7 +14,7 @@ const DownloadsPage = ({ onNavigate, user }) => {
       }
 
       try {
-        const response = await fetch(`http://localhost:5000/downloads/${user.id}`);
+        const response = await fetch(`${API_ENDPOINTS.DOWNLOADS}/${user.id}`);
         if (response.ok) {
           const data = await response.json();
           setDownloads(data.downloads || []);

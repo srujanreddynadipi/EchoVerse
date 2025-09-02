@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_ENDPOINTS } from '../utils/api';
 import { Info, Download, Settings, RefreshCw, Speaker, CheckCircle, AlertCircle } from 'lucide-react';
 
 const VoiceInfo = () => {
@@ -15,21 +16,21 @@ const VoiceInfo = () => {
     setIsLoading(true);
     try {
       // Fetch voice installation info
-      const infoResponse = await fetch('http://localhost:5000/debug/voice-installation-info');
+      const infoResponse = await fetch(API_ENDPOINTS.DEBUG_VOICE_INFO);
       if (infoResponse.ok) {
         const infoData = await infoResponse.json();
         setVoiceInfo(infoData);
       }
 
       // Fetch system voices
-      const voicesResponse = await fetch('http://localhost:5000/debug/system-voices');
+      const voicesResponse = await fetch(API_ENDPOINTS.DEBUG_SYSTEM_VOICES);
       if (voicesResponse.ok) {
         const voicesData = await voicesResponse.json();
         setSystemVoices(voicesData.system_voices || []);
       }
 
       // Fetch voice test results
-      const testResponse = await fetch('http://localhost:5000/debug/test-all-voices');
+      const testResponse = await fetch(API_ENDPOINTS.DEBUG_TEST_VOICES);
       if (testResponse.ok) {
         const testData = await testResponse.json();
         setVoiceTest(testData);

@@ -22,17 +22,20 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# Configure CORS
-CORS(app, resources={
-    r"/*": {
-        "origins": [
-            "http://localhost:3000",  # For local development
-            "https://echo-verse-two.vercel.app"  # Vercel domain
-        ],
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"]
-    }
-})
+# Configure CORS for production deployment
+if os.getenv('FLASK_ENV') == 'production':
+    # Production CORS settings
+    CORS(app, resources={
+        r"/*": {
+            "origins": [
+                "https://echoverse.onrender.com",  # Your frontend URL
+                "https://echoverse-frontend.onrender.com",  # Alternative frontend URL
+            ]
+        }
+    })
+else:
+    # Development CORS settings - allow all origins
+    CORS(app)
 
 # Configure Flask settings for file uploads
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max file size
@@ -2228,4 +2231,6 @@ def generate_chapter_summary(content):
 
 if __name__ == '__main__':
     logger.info("Starting EchoVerse backend server...")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV') != 'production'
+    app.run(host='0.0.0.0', port=port, debug=debug)

@@ -1,0 +1,6 @@
+version: 1
+build:
+  commands:
+    - pip install -r requirements.txt
+start:
+  command: gunicorn app:app --bind 0.0.0.0:$PORT

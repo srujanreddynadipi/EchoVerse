@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_ENDPOINTS } from '../utils/api';
 import { Mail, Lock, Eye, EyeOff, User, ArrowRight, LogIn, Phone, MapPin, Calendar, GraduationCap, BookOpen, Award, FileText } from 'lucide-react';
 
 const RegisterPage = ({ onRegister, onSwitchToLogin }) => {
@@ -83,7 +84,7 @@ const RegisterPage = ({ onRegister, onSwitchToLogin }) => {
         registrationData.gpa = parseFloat(registrationData.gpa);
       }
 
-      const response = await fetch('http://localhost:5000/auth/register', {
+      const response = await fetch(API_ENDPOINTS.REGISTER, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
